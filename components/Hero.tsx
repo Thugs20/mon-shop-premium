@@ -7,7 +7,7 @@ const Hero = () => {
       {/* EFFET LUMIÈRE */}
       <div className="absolute top-1/4 -right-20 w-[200px] h-[200px] bg-[#38bdf8]/5 blur-[60px] rounded-full -z-10" />
 
-      <div className="max-w-6xl mx-auto items-center grid grid-cols-2 px-1 md:px-6 gap-2 md:gap-4">
+      <div className="w-full max-w-6xl mx-auto px-3 md:px-6 grid grid-cols-2 gap-2 md:gap-4 items-center">
         
         {/* CÔTÉ GAUCHE : TEXTE */}
         <div className="space-y-3 md:space-y-8">
@@ -38,8 +38,8 @@ const Hero = () => {
         </div>
 
         {/* CÔTÉ DROIT : IMAGE */}
-        <div className="relative flex justify-center">
-          <div className="relative z-10 animate-float max-w-[130px] md:max-w-[390px]">
+        <div className="relative flex justify-end md:justify-center">
+          <div className="relative z-10 animate-float max-w-[170px] md:max-w-[390px]">
             <img 
               src="/images/hero1.webp" 
               alt="Produit Premium" 
