@@ -1,12 +1,12 @@
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-900 flex items-center justify-center">
+    <main className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-5xl font-extrabold text-white tracking-tight">
-          PREMIUM<span className="text-blue-500">SHOP</span>
+        <h1 className="text-5xl font-extrabold text-[#f8fafc] tracking-tight">
+          PREMIUM<span className="text-[#38bdf8]">SHOP</span>
         </h1>
         <p className="text-slate-400 mt-4 text-lg">
-          Le futur de votre portfolio e-commerce commence ici.
+          L'excellence du e-commerce, épurée et performante.
         </p>
       </div>
     </main>

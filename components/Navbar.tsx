@@ -2,23 +2,29 @@ import Link from 'next/link';
 
 const Navbar = () => {
   return (
-    <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50">
-      {/* L'effet Glassmorphism : bg-white/10 et backdrop-blur */}
-      <div className="bg-white/10 backdrop-blur-lg border border-white/20 px-8 py-4 rounded-2xl flex justify-between items-center shadow-2xl">
+    <header className="fixed top-6 left-0 right-0 flex justify-center z-50 px-4">
+      {/* Barre de navigation horizontale */}
+      <nav className="flex w-full max-w-6xl items-center justify-between bg-white/15 backdrop-blur-2xl border border-white/30 px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
         
+        {/* LOGO */}
         <div className="text-white font-bold text-xl tracking-tighter">
-          PREMIUM<span className="text-blue-500">SHOP</span>
+          PREMIUM<span className="text-[#38bdf8]">SHOP</span>
         </div>
         
-        <div className="hidden md:flex space-x-8 text-sm font-medium text-slate-300">
-          <Link href="/" className="hover:text-white transition">Accueil</Link>
-          <Link href="/boutique" className="hover:text-white transition">Boutique</Link>
-          <Link href="/panier" className="bg-blue-600 px-5 py-2 rounded-xl text-white hover:bg-blue-500 transition shadow-lg shadow-blue-500/20">
+        {/* LIENS & PANIER - Toujours visibles pour l'instant */}
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-6 text-sm font-medium text-slate-200">
+            <Link href="/" className="hover:text-[#38bdf8] transition-colors">Accueil</Link>
+            <Link href="/boutique" className="hover:text-[#38bdf8] transition-colors">Boutique</Link>
+          </div>
+          
+          <Link href="/panier" className="bg-[#38bdf8] text-[#0f172a] px-5 py-2 rounded-xl text-sm font-bold hover:bg-white transition-all">
             Panier (0)
           </Link>
         </div>
-      </div>
-    </nav>
+
+      </nav>
+    </header>
   );
 };
 
