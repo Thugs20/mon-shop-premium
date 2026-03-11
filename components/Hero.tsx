@@ -39,7 +39,7 @@ const Hero = () => {
 
         {/* CÔTÉ DROIT : IMAGE */}
         <div className="relative flex justify-end md:justify-center">
-          <div className="relative z-10 animate-float max-w-[170px] md:max-w-[390px]">
+          <div className="relative z-10 animate-float max-w-[160px] md:max-w-[390px]">
             <img 
               src="/images/hero1.webp" 
               alt="Produit Premium" 

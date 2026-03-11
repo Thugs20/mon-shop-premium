@@ -1,4 +1,5 @@
 import Hero from "../components/Hero";
+import TrustBar from "../components/TrustBar";
 import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 
@@ -8,7 +9,9 @@ export default function Home() {
       {/* 1. SECTION HERO (Celle qu'on vient de coder) */}
       <Hero />
 
-      {/* 2. SECTION PRODUITS (Avec un titre pour séparer) */}
+      {/* 2. Insertion juste sous le Hero */}
+      <TrustBar />
+
       <section className="max-w-6xl mx-auto px-6 py-24">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
