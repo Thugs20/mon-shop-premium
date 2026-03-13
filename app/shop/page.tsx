@@ -6,15 +6,26 @@ import ProductCard from "../../components/ProductCard";
 import { Search } from "lucide-react";
 
 const ShopPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState("Tous");
+  // À l'intérieur de ton composant ShopPage
+const [searchTerm, setSearchTerm] = useState("");
+const [activeCategory, setActiveCategory] = useState("Tous");
 
-  // Logique de filtrage
-  const filteredProducts = products.filter((p) => {
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === "Tous" || p.category === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
+// Cette constante va recalculer automatiquement la liste dès que 'searchTerm' ou 'activeCategory' change
+const filteredProducts = products.filter((product) => {
+  // 1. On vérifie si le nom correspond à la recherche
+  const matchesSearch = product.name
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+
+  // 2. On vérifie si la catégorie correspond
+  const matchesCategory = 
+    activeCategory === "Tous" || product.category === activeCategory;
+
+  // Le produit n'est affiché que s'il remplit les deux conditions
+  return matchesSearch && matchesCategory;
+});
+
+  
 
   return (
     <main className="bg-[#1e293b] min-h-screen pt-32 pb-20 px-6">
