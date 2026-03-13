@@ -16,3 +16,15 @@ body {
   font-family: sans-serif;
   min-height: 100vh;
 }
+
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;     /* Firefox */
+    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iOS */
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+  }
+}

@@ -1,94 +1,125 @@
 "use client";
+import { useState } from "react";
 import { products } from "@/data/products";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, Star, Shield, Truck, RefreshCw } from "lucide-react";
-import Link from "next/link";
+import { 
+  ChevronLeft, Heart, Check, 
+  Truck, ShieldCheck, RotateCcw 
+} from "lucide-react";
 
 const ProductDetails = () => {
   const params = useParams();
   const router = useRouter();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedColor, setSelectedColor] = useState(0);
   
-  // On cherche le produit qui correspond à l'ID dans l'URL
   const product = products.find((p) => p.id === Number(params.id));
 
-  if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#1e293b] text-white">
-        <p>Produit introuvable...</p>
-      </div>
-    );
-  }
+  if (!product) return <div className="bg-[#1e293b] min-h-screen" />;
 
   return (
-    <main className="bg-[#1e293b] min-h-screen pt-32 pb-20 px-6">
+    <main className="bg-[#1e293b] min-h-screen pt-24 pb-20 px-6">
       <div className="max-w-6xl mx-auto">
-        {/* BOUTON RETOUR */}
-        <button 
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-slate-400 hover:text-[#38bdf8] transition-colors mb-8 group"
-        >
-          <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          Retour à la boutique
-        </button>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        
+        {/* BARRE DE NAVIGATION (Optimisée Mobile) */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <button 
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-slate-400 hover:text-white transition-all group py-2"
+          >
+            <div className="p-2 rounded-full border border-white/5 group-hover:border-[#38bdf8]/50 transition-colors">
+              <ChevronLeft size={18} />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-widest">Retour</span>
+          </button>
           
-          {/* IMAGE DU PRODUIT */}
-          <div className="relative aspect-square rounded-3xl overflow-hidden bg-slate-800 border border-white/5">
-            <img 
-              src={product.image} 
-              alt={product.name} 
-              className="w-full h-full object-cover"
-            />
+          <div className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] md:tracking-[0.3em] border-l md:border-l-0 border-[#38bdf8]/30 pl-3 md:pl-0">
+            PremiumShop <span className="mx-1 text-slate-700">/</span> {product.category} <span className="mx-1 text-slate-700">/</span> {product.name}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          
+          {/* COLONNE GAUCHE : IMAGE (Réduite à 5/12 pour l'équilibre) */}
+          <div className="lg:col-span-5 relative group mx-auto w-full max-w-[500px] lg:max-w-none">
+            <div className="aspect-square rounded-[2rem] overflow-hidden bg-slate-800/50 border border-white/5 shadow-2xl">
+              <img 
+                src={product.image} 
+                alt={product.name} 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s]" 
+              />
+            </div>
+            
+            <button 
+              onClick={() => setIsFavorite(!isFavorite)}
+              className="absolute top-6 right-6 p-4 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-white transition-all hover:scale-110 active:scale-90"
+            >
+              <Heart 
+                size={20} 
+                className={isFavorite ? "fill-[#38bdf8] text-[#38bdf8]" : "text-white"} 
+              />
+            </button>
           </div>
 
-          {/* INFOS DU PRODUIT */}
-          <div className="space-y-8">
-            <div className="space-y-2">
-              <span className="text-[#38bdf8] font-bold tracking-[0.2em] text-xs uppercase">
-                Collection {product.category}
-              </span>
-              <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
+          {/* COLONNE DROITE : INFOS (7/12) */}
+          <div className="lg:col-span-7 space-y-8">
+            <div className="space-y-3">
+              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight">
                 {product.name}
               </h1>
-              <div className="flex items-center gap-4 pt-2">
-                <span className="text-3xl font-black text-white">{product.price}€</span>
-                <div className="flex items-center gap-1 text-yellow-500">
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <span className="text-slate-400 text-xs ml-2">(48 avis client)</span>
+              <p className="text-3xl font-light text-[#38bdf8] tracking-tighter">{product.price}€</p>
+            </div>
+
+            {/* Couleurs (Centrage du Check corrigé) */}
+            {product.colors && (
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sélectionner une nuance</p>
+                <div className="flex gap-3">
+                  {product.colors.map((color, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedColor(index)}
+                      style={{ backgroundColor: color }}
+                      className={`w-10 h-10 rounded-full border-2 transition-all flex items-center justify-center ${
+                        selectedColor === index ? "border-[#38bdf8] scale-110 ring-4 ring-[#38bdf8]/10" : "border-white/5 opacity-60"
+                      }`}
+                    >
+                      {/* On force le centrage absolu ici */}
+                      {selectedColor === index && (
+                        <Check size={16} className={color.toLowerCase() === "#ffffff" ? "text-black" : "text-white"} />
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
+            )}
+
+            <div className="pt-6 border-t border-white/5">
+              <p className="text-slate-400 leading-relaxed font-light text-base md:text-lg">
+                {product.description}
+              </p>
             </div>
 
-            <p className="text-slate-400 text-lg leading-relaxed">
-              {product.description}
-            </p>
-
-            {/* OPTIONS DE RÉASSURANCE DÉTAILLÉES */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6 border-y border-white/5">
-              <div className="flex flex-col items-center text-center gap-2">
-                <Truck size={20} className="text-[#38bdf8]" />
-                <span className="text-[10px] text-slate-300 font-bold uppercase">Livraison Offerte</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2">
-                <Shield size={20} className="text-[#38bdf8]" />
-                <span className="text-[10px] text-slate-300 font-bold uppercase">Garantie 2 ans</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2">
-                <RefreshCw size={20} className="text-[#38bdf8]" />
-                <span className="text-[10px] text-slate-300 font-bold uppercase">Retours Gratuits</span>
-              </div>
-            </div>
-
-            {/* ACTION */}
-            <div className="pt-4">
-              <button className="w-full bg-white text-[#0f172a] hover:bg-[#38bdf8] py-5 rounded-2xl font-black uppercase tracking-widest transition-all shadow-xl shadow-white/5 active:scale-95">
-                Ajouter au panier
+            {/* Action & Réassurance */}
+            <div className="space-y-6 pt-4">
+              <button className="w-full bg-white text-black py-5 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#38bdf8] transition-all active:scale-95 shadow-xl">
+                Ajouter au Panier
               </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                  <Truck size={16} className="text-[#38bdf8]" />
+                  <span className="text-[9px] font-bold text-slate-300 uppercase tracking-tighter">Livraison 48h</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                  <RotateCcw size={16} className="text-[#38bdf8]" />
+                  <span className="text-[9px] font-bold text-slate-300 uppercase tracking-tighter">Retours Offerts</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                  <ShieldCheck size={16} className="text-[#38bdf8]" />
+                  <span className="text-[9px] font-bold text-slate-300 uppercase tracking-tighter">Garantie 2 ans</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

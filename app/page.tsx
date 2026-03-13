@@ -2,6 +2,7 @@ import Hero from "../components/Hero";
 import TrustBar from "../components/TrustBar";
 import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -23,9 +24,15 @@ export default function Home() {
         NOS PIÈCES <span className="text-slate-600 italic">EXCLUSIVES</span>
       </p>
     </div>
-    <button className="text-white/60 border-b border-white/10 pb-1 text-xs font-bold uppercase tracking-widest hover:text-[#38bdf8] hover:border-[#38bdf8] transition-all">
-      Tout voir →
-    </button>
+    <Link
+  href="/shop"
+  className="group text-white/60 border-b border-white/10 pb-1 text-xs font-bold uppercase tracking-widest hover:text-[#38bdf8] hover:border-[#38bdf8] transition-all"
+>
+  Tout voir 
+  <span className="inline-block ml-1 transition-transform group-hover:translate-x-1">
+    →
+  </span>
+</Link>
   </div>
 
   {/* GRILLE : 2 colonnes sur mobile pour le côté "pro" */}

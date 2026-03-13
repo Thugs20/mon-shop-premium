@@ -52,7 +52,7 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden mt-4 pt-4 border-t border-white/10 flex flex-col gap-4 text-slate-300 font-medium pb-2">
             <Link href="/" onClick={() => setIsOpen(false)}>Accueil</Link>
-            <Link href="/boutique" onClick={() => setIsOpen(false)}>Boutique</Link>
+            <Link href="/shop" onClick={() => setIsOpen(false)}>Boutique</Link>
             <Link href="/a-propos" onClick={() => setIsOpen(false)}>À propos</Link>
             <Link href="/contact" onClick={() => setIsOpen(false)}>Contact</Link>
           </div>
