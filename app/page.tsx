@@ -3,6 +3,10 @@ import TrustBar from "../components/TrustBar";
 import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import Link from "next/link";
+// Nouveaux imports
+import Newsletter from "../components/Newsletter";
+import CreatorBadge from "../components/CreatorBadge";
+import Footer from "../components/Footer";
 
 export default function Home() {
   // LOGIQUE MENTOR : On ne prend que les 3 premiers produits pour la vitrine
@@ -56,6 +60,11 @@ export default function Home() {
             </Link>
         </div>
       </section>
+
+      {/* 3. NOUVELLES SECTIONS INTÉGRÉES */}
+      <Newsletter />
+      <CreatorBadge />
+      <Footer />
     </main>
   );
 }
