@@ -1,8 +1,10 @@
 "use client";
 import { Product } from "../data/products";
 import Link from "next/link";
+import { useCart } from "../context/CartContext"; // Import du hook
 
 const ProductCard = ({ product }: { product: Product }) => {
+  const { addToCart } = useCart(); // On récupère la fonction
   return (
     <div className="bg-[#0f172a]/40 border border-white/5 rounded-3xl p-3 hover:border-[#38bdf8]/30 transition-all group flex flex-col h-full shadow-2xl">
       
@@ -45,9 +47,12 @@ const ProductCard = ({ product }: { product: Product }) => {
       
       {/* Bouton Panier */}
       <div className="mt-auto pt-6">
-        <button className="w-full bg-white text-[#0f172a] hover:bg-[#38bdf8] hover:scale-[1.02] py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg">
-          Ajouter au panier
-        </button>
+        <button 
+      onClick={() => addToCart(product)} // On appelle la fonction au clic
+      className="w-full bg-white text-[#0f172a] hover:bg-[#38bdf8] py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg"
+    >
+      Ajouter au panier
+    </button>
       </div>
     </div>
   );
