@@ -2,7 +2,8 @@ import Navbar from "../components/Navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "../context/CartContext"; // Chemin corrigé
+import { CartProvider } from "../context/CartContext";
+import { FavoritesProvider } from "../context/FavoritesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +32,10 @@ export default function RootLayout({
       >
         {/* Le CartProvider entoure tout pour que le panier marche partout */}
         <CartProvider>
-          <Navbar />
-          {children}
+          <FavoritesProvider>
+            <Navbar />
+            {children}
+          </FavoritesProvider>
         </CartProvider>
       </body>
     </html>

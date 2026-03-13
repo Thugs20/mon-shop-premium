@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { products } from "@/data/products";
 import { useParams, useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext"; // Import Panier
+import { useFavorites } from "@/context/FavoritesContext"; // Import Favoris
 import { 
   ChevronLeft, Heart, Check, 
   Truck, ShieldCheck, RotateCcw 
@@ -10,12 +12,17 @@ import {
 const ProductDetails = () => {
   const params = useParams();
   const router = useRouter();
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { addToCart } = useCart(); // Logique panier
+  const { toggleFavorite, isFavorite } = useFavorites(); // Logique favoris
+  
   const [selectedColor, setSelectedColor] = useState(0);
   
   const product = products.find((p) => p.id === Number(params.id));
 
   if (!product) return <div className="bg-[#1e293b] min-h-screen" />;
+
+  // On vérifie si ce produit spécifique est dans les favoris
+  const active = isFavorite(product.id);
 
   return (
     <main className="bg-[#1e293b] min-h-screen pt-24 pb-20 px-6">
@@ -40,7 +47,7 @@ const ProductDetails = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           
-          {/* COLONNE GAUCHE : IMAGE (Réduite à 5/12 pour l'équilibre) */}
+          {/* COLONNE GAUCHE : IMAGE */}
           <div className="lg:col-span-5 relative group mx-auto w-full max-w-[500px] lg:max-w-none">
             <div className="aspect-square rounded-[2rem] overflow-hidden bg-slate-800/50 border border-white/5 shadow-2xl">
               <img 
@@ -50,18 +57,19 @@ const ProductDetails = () => {
               />
             </div>
             
+            {/* BOUTON FAVORIS (FUSIONNÉ AVEC LE CONTEXT) */}
             <button 
-              onClick={() => setIsFavorite(!isFavorite)}
-              className="absolute top-6 right-6 p-4 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-white transition-all hover:scale-110 active:scale-90"
+              onClick={() => toggleFavorite(product)}
+              className="absolute top-6 right-6 p-4 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-white transition-all hover:scale-110 active:scale-90 z-10"
             >
               <Heart 
                 size={20} 
-                className={isFavorite ? "fill-[#38bdf8] text-[#38bdf8]" : "text-white"} 
+                className={active ? "fill-[#38bdf8] text-[#38bdf8]" : "text-white"} 
               />
             </button>
           </div>
 
-          {/* COLONNE DROITE : INFOS (7/12) */}
+          {/* COLONNE DROITE : INFOS */}
           <div className="lg:col-span-7 space-y-8">
             <div className="space-y-3">
               <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight">
@@ -70,7 +78,7 @@ const ProductDetails = () => {
               <p className="text-3xl font-light text-[#38bdf8] tracking-tighter">{product.price}€</p>
             </div>
 
-            {/* Couleurs (Centrage du Check corrigé) */}
+            {/* Couleurs */}
             {product.colors && (
               <div className="space-y-3">
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sélectionner une nuance</p>
@@ -84,7 +92,6 @@ const ProductDetails = () => {
                         selectedColor === index ? "border-[#38bdf8] scale-110 ring-4 ring-[#38bdf8]/10" : "border-white/5 opacity-60"
                       }`}
                     >
-                      {/* On force le centrage absolu ici */}
                       {selectedColor === index && (
                         <Check size={16} className={color.toLowerCase() === "#ffffff" ? "text-black" : "text-white"} />
                       )}
@@ -102,7 +109,10 @@ const ProductDetails = () => {
 
             {/* Action & Réassurance */}
             <div className="space-y-6 pt-4">
-              <button className="w-full bg-white text-black py-5 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#38bdf8] transition-all active:scale-95 shadow-xl">
+              <button 
+                onClick={() => addToCart(product)}
+                className="w-full bg-white text-black py-5 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#38bdf8] transition-all active:scale-95 shadow-xl"
+              >
                 Ajouter au Panier
               </button>
 
