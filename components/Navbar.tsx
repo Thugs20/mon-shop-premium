@@ -28,7 +28,7 @@ const Navbar = () => {
           {/* 3. CENTRE : MENU (Desktop uniquement) */}
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
             <Link href="/" className="hover:text-[#38bdf8] transition-colors">Accueil</Link>
-            <Link href="/boutique" className="hover:text-[#38bdf8] transition-colors">Boutique</Link>
+            <Link href="/shop" className="hover:text-[#38bdf8] transition-colors">Boutique</Link>
             <Link href="/a-propos" className="hover:text-[#38bdf8] transition-colors">À propos</Link>
             <Link href="/contact" className="hover:text-[#38bdf8] transition-colors">Contact</Link>
           </div>
