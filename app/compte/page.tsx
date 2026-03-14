@@ -66,12 +66,12 @@ export default function ProfilePage() {
   // --- LOGIQUE RÉELLE DE GÉNÉRATION PDF ---
   const handleDownloadInvoice = (order: any) => {
     const docPdf = new jsPDF();
-    const primaryColor = [56, 189, 248]; // #38bdf8
+    const primaryColor = [29, 132, 177]; // #1d84b1
     const darkColor = [51, 65, 85];    // #334155
     const lightGray = [241, 245, 249]; // #f1f5f9
 
     // --- 1. FILIGRANE (WATERMARK) ---
-    docPdf.setTextColor(245, 245, 245); // Très léger
+    docPdf.setTextColor(64, 64, 64); // Très léger
     docPdf.setFontSize(60);
     docPdf.setFont("helvetica", "bold");
     docPdf.saveGraphicsState();
