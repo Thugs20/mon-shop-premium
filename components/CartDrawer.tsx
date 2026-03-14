@@ -2,9 +2,26 @@
 import { useCart } from "../context/CartContext";
 import { X, ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import Link from "next/link";
+// Ajout des imports pour la logique
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 const CartDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const { cart, removeFromCart, addToCart, cartTotal, clearCart } = useCart();
+  
+  // Initialisation des hooks
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // Logique de redirection
+  const handleCheckout = () => {
+    onClose(); // On ferme le drawer d'abord
+    if (!user) {
+      router.push("/login");
+    } else {
+      router.push("/checkout");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -68,7 +85,6 @@ const CartDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     
                     <div className="flex justify-between items-center mt-2">
                       <div className="flex items-center gap-3 bg-white/5 rounded-lg px-2 py-1">
-                        {/* On pourrait ajouter une fonction de réduction de quantité ici */}
                         <span className="text-white text-xs font-bold">Qté: {item.quantity}</span>
                       </div>
                       <p className="text-[#38bdf8] font-bold text-sm">{item.price * item.quantity}€</p>
@@ -89,9 +105,14 @@ const CartDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             </div>
             <p className="text-[10px] text-slate-500 mb-6 italic">Frais de port et taxes calculés lors du paiement.</p>
             
-            <button className="w-full bg-[#38bdf8] text-[#0f172a] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-white transition-all shadow-xl shadow-[#38bdf8]/10">
+            {/* Bouton avec la nouvelle fonction de redirection */}
+            <button 
+              onClick={handleCheckout}
+              className="w-full bg-[#38bdf8] text-[#0f172a] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-white transition-all shadow-xl shadow-[#38bdf8]/10"
+            >
               Passer la commande
             </button>
+            
             <button 
               onClick={clearCart}
               className="w-full text-slate-500 hover:text-white py-2 text-[9px] font-bold uppercase tracking-widest transition-colors"
