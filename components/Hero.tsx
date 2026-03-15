@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 const Hero = () => {
   return (
     <section className="relative flex items-center overflow-hidden mt-24 md:mt-11 py-6 md:pt-20 md:pb-0 min-h-0 md:min-h-[85vh]">
@@ -28,12 +30,17 @@ const Hero = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
-            <button className="bg-white text-[#0f172a] px-3 py-2 md:px-8 md:py-4 rounded-lg md:rounded-2xl text-[9px] md:text-sm font-bold active:scale-95 transition-all">
-              Boutique
-            </button>
+            <Link href="/shop">
+              <button className="bg-white text-[#0f172a] px-3 py-2 md:px-8 md:py-4 rounded-lg md:rounded-2xl text-[9px] md:text-sm font-bold active:scale-95 transition-all">
+                Boutique
+              </button>
+            </Link>
+            <Link href="/a-propos">
             <button className="border border-white/10 text-white px-3 py-2 md:px-8 md:py-4 rounded-lg md:rounded-2xl text-[9px] md:text-sm font-bold active:scale-95 transition-all">
               Vision
             </button>
+            </Link>
+            
           </div>
         </div>
 
