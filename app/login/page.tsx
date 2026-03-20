@@ -72,6 +72,19 @@ export default function LoginPage() {
     setIsLoading(true); 
 
     try {
+      // --- AJOUT DE LA VÉRIFICATION BACKEND ---
+      const verifyRes = await fetch("/api/verify-captcha", {
+        method: "POST",
+        body: JSON.stringify({ token: captchaToken }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const verifyData = await verifyRes.json();
+      if (!verifyData.success) {
+        throw new Error("Captcha invalide ou expiré.");
+      }
+      // -----------------------------------------
+
       if (isRegister) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(userCredential.user, { displayName: name });
@@ -80,13 +93,21 @@ export default function LoginPage() {
       }
       router.push("/shop");
     } catch (err: any) {
-      setIsLoading(false); 
-      if (err.code === 'auth/user-not-found') setError("Aucun compte trouvé avec cet email.");
-      else if (err.code === 'auth/wrong-password') setError("Mot de passe incorrect.");
-      else if (err.code === 'auth/email-already-in-use') setError("Cet email est déjà utilisé.");
-      else if (err.code === 'auth/invalid-email') setError("Format d'email invalide.");
-      else setError("Une erreur est survenue. Veuillez réessayer.");
-    }
+  setIsLoading(false); 
+  
+  // Si c'est notre erreur personnalisée (Captcha)
+  if (err.message === "Captcha invalide ou expiré.") {
+    setError(err.message);
+    return;
+  }
+
+  // Tes erreurs Firebase habituelles
+  if (err.code === 'auth/user-not-found') setError("Aucun compte trouvé avec cet email.");
+  else if (err.code === 'auth/wrong-password') setError("Mot de passe incorrect.");
+  else if (err.code === 'auth/email-already-in-use') setError("Cet email est déjà utilisé.");
+  else if (err.code === 'auth/invalid-email') setError("Format d'email invalide.");
+  else setError("Une erreur est survenue. Veuillez réessayer.");
+  }
   };
 
   const handleForgotPassword = async () => {
@@ -182,7 +203,7 @@ export default function LoginPage() {
           <div className="flex justify-center py-2 scale-90 sm:scale-100">
             <ReCAPTCHA
               ref={recaptchaRef}
-              sitekey="6LcuI4osAAAAAGGTZXn9AuQLXz9mIlJWLjVEtlsy" 
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!} 
               onChange={(token) => setCaptchaToken(token)}
               theme="dark"
             />

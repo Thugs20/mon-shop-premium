@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛒 PREMIUMSHOP - E-Commerce Modern Experience
 
-## Getting Started
+**PREMIUMSHOP** est une application web e-commerce haute performance conçue avec une approche "Fullstack" moderne. Ce projet met l'accent sur une interface utilisateur cinématique, une sécurité renforcée et une logique de gestion de données en temps réel.
 
-First, run the development server:
+## 🚀 Technologies Utilisées
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* **Framework :** [Next.js 14+](https://nextjs.org/) (App Router)
+* **Langage :** TypeScript
+* **Stylisation :** Tailwind CSS (Glassmorphism & Responsive Design)
+* **Backend & Auth :** [Firebase](https://firebase.google.com/) (Email/Password & Magic Link)
+* **Sécurité :** Google reCAPTCHA v2 avec validation côté serveur (API Routes)
+* **Déploiement :** [Vercel](https://vercel.com/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛡️ Fonctionnalités Clés & Sécurité
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🔐 Authentification Sécurisée
+L'application propose trois modes de connexion :
+1.  **Email/Mot de passe classique** avec gestion des erreurs Firebase.
+2.  **Magic Link :** Connexion simplifiée sans mot de passe via email.
+3.  **Réinitialisation de mot de passe :** Système complet de récupération.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🤖 Protection Anti-Robot (reCAPTCHA)
+Contrairement aux intégrations basiques, PREMIUMSHOP utilise une **validation hybride** :
+* **Client-side :** Widget Google reCAPTCHA pour le filtrage initial.
+* **Server-side :** Une route API Next.js dédiée (`/api/verify-captcha`) communique directement avec les serveurs de Google pour valider le jeton avant toute interaction avec Firebase. Cela garantit qu'aucun script automatisé ne peut créer de comptes.
 
-## Learn More
+### 🎨 Design Premium
+* Interface **ultra-responsive** adaptée à tous les supports.
+* Utilisation de **Glassmorphism** pour un look moderne et épuré.
+* Optimisation des images pour un chargement rapide.
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Installation & Configuration Locale
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Cloner le projet :**
+    ```bash
+    git clone [https://github.com/Thugs20/mon-shop-premium](https://github.com/Thugs20/mon-shop-premium.git)
+    ```
+2.  **Installer les dépendances :**
+    ```bash
+    npm install
+    ```
+3.  **Configurer les variables d'environnement :**
+    Créez un fichier `.env.local` à la racine et ajoutez vos clés Firebase et reCAPTCHA :
+    ```env
+    NEXT_PUBLIC_RECAPTCHA_SITE_KEY=...
+    RECAPTCHA_SECRET_KEY=...
+    NEXT_PUBLIC_FIREBASE_API_KEY=...
+    # (etc.)
+    ```
+4.  **Lancer le projet :**
+    ```bash
+    npm run dev
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👨‍💻 Développeur
+Conçu et développé par **HOUETO Fabrice** (HFR Web Designer).

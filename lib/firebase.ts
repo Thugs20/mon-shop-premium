@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAMBBfqEVgJFhA3CGixg3e-KFJSivZi6Wo",
-  authDomain: "premiumshop-4f78b.firebaseapp.com",
-  projectId: "premiumshop-4f78b",
-  storageBucket: "premiumshop-4f78b.firebasestorage.app",
-  messagingSenderId: "430807071791",
-  appId: "1:430807071791:web:f2381ff98209cbd68e5ada"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
 // Initialisation de Firebase (évite les erreurs au rechargement sur Next.js)
