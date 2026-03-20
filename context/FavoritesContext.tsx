@@ -1,9 +1,8 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '../data/products';
-// Ajout des imports Firebase
 import { db } from "../lib/firebase";
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, getDoc } from "firebase/firestore";
 import { useAuth } from "./AuthContext";
 
 interface FavoritesContextType {
@@ -16,47 +15,78 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 
 export const FavoritesProvider = ({ children }: { children: React.ReactNode }) => {
   const [favorites, setFavorites] = useState<Product[]>([]);
-  const { user } = useAuth(); // Récupération de l'utilisateur
+  const { user } = useAuth();
 
-  // 1. Charger depuis le localStorage au démarrage
+  // 1. CHARGEMENT INITIAL & NETTOYAGE DÉCONNEXION
   useEffect(() => {
-    const saved = localStorage.getItem('premium-shop-favs');
-    if (saved) setFavorites(JSON.parse(saved));
-  }, []);
+    if (!user) {
+      // Si déconnecté : on charge le localStorage
+      const saved = localStorage.getItem('premium-shop-favs');
+      setFavorites(saved ? JSON.parse(saved) : []);
+    }
+  }, [user]);
 
-  // 2. ÉCOUTER les favoris sur Firebase (Synchro entrante)
+  // 2. SYNCHRONISATION ENTRANTE ET FUSION (MERGE)
   useEffect(() => {
     if (!user) return;
 
+    const syncOnLogin = async () => {
+      const favRef = doc(db, "userFavorites", user.uid);
+      const docSnap = await getDoc(favRef);
+      
+      // On récupère les favoris actuels (ceux du localStorage qui sont passés dans le state au démarrage)
+      const currentLocal = [...favorites];
+
+      if (docSnap.exists()) {
+        const cloudData = docSnap.data().items as Product[] || [];
+        
+        // FUSION SANS DOUBLONS : On combine Cloud + Local
+        const merged = [...new Map([...cloudData, ...currentLocal].map(item => [item.id, item])).values()];
+        
+        setFavorites(merged);
+        // On nettoie le localStorage car maintenant c'est Firestore qui fait foi
+        localStorage.removeItem('premium-shop-favs');
+      } else if (currentLocal.length > 0) {
+        // Premier enregistrement pour un nouveau compte
+        await setDoc(favRef, { items: currentLocal, updatedAt: new Date() });
+        localStorage.removeItem('premium-shop-favs');
+      }
+    };
+
+    syncOnLogin();
+
+    // Écoute en temps réel
     const favRef = doc(db, "userFavorites", user.uid);
     const unsubscribe = onSnapshot(favRef, (docSnap) => {
       if (docSnap.exists()) {
         const cloudData = docSnap.data().items as Product[];
-        // On synchronise si le contenu est différent
-        if (JSON.stringify(cloudData) !== JSON.stringify(favorites)) {
-          setFavorites(cloudData || []);
-        }
+        setFavorites(cloudData || []);
       }
     });
 
     return () => unsubscribe();
   }, [user]);
 
-  // 3. Sauvegarder dans le localStorage ET Firebase (Synchro sortante)
+  // 3. SAUVEGARDE AUTOMATIQUE (Synchro sortante)
   useEffect(() => {
-    localStorage.setItem('premium-shop-favs', JSON.stringify(favorites));
+    // Si déconnecté, on écrit dans le localStorage
+    if (!user) {
+      localStorage.setItem('premium-shop-favs', JSON.stringify(favorites));
+      return;
+    }
 
+    // Si connecté, on écrit dans Firebase
     const syncToFirebase = async () => {
-      if (user) {
-        try {
-          const favRef = doc(db, "userFavorites", user.uid);
-          await setDoc(favRef, {
-            items: favorites,
-            updatedAt: new Date()
-          }, { merge: true });
-        } catch (error) {
-          console.error("Erreur synchro favoris:", error);
-        }
+      try {
+        const favRef = doc(db, "userFavorites", user.uid);
+        await setDoc(favRef, {
+          items: favorites,
+          updatedAt: new Date()
+        }, { merge: true });
+        // On s'assure que le localStorage est vide pour ne pas polluer d'autres comptes
+        localStorage.removeItem('premium-shop-favs');
+      } catch (error) {
+        console.error("Erreur synchro favoris:", error);
       }
     };
 
@@ -67,10 +97,8 @@ export const FavoritesProvider = ({ children }: { children: React.ReactNode }) =
   const toggleFavorite = (product: Product) => {
     setFavorites((prev) => {
       const exists = prev.find((p) => p.id === product.id);
-      if (exists) {
-        return prev.filter((p) => p.id !== product.id);
-      }
-      return [...prev, product];
+      const newState = exists ? prev.filter((p) => p.id !== product.id) : [...prev, product];
+      return newState;
     });
   };
 

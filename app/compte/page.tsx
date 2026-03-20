@@ -56,6 +56,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     await signOut(auth);
+    localStorage.removeItem('premium-shop-favs');
     router.push("/");
   };
 
