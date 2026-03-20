@@ -1,9 +1,8 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '@/data/products';
-// Ajout des imports pour la synchronisation
 import { db } from "../lib/firebase";
-import { doc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, getDoc } from "firebase/firestore";
 import { useAuth } from "./AuthContext";
 
 interface CartItem extends Product {
@@ -23,51 +22,93 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const { user } = useAuth(); // Récupération de l'utilisateur connecté
+  const { user } = useAuth();
 
-  // 1. Charger le panier local au démarrage (Hydratation)
+  // 1. CHARGEMENT INITIAL & NETTOYAGE DÉCONNEXION
   useEffect(() => {
-    const savedCart = localStorage.getItem('premium-shop-cart');
-    if (savedCart) setCart(JSON.parse(savedCart));
-  }, []);
+    if (!user) {
+      // Si déconnecté : on charge ce qui est resté en local (invité)
+      const savedCart = localStorage.getItem('premium-shop-cart');
+      setCart(savedCart ? JSON.parse(savedCart) : []); // <-- CORRIGÉ : setCart
+    }
+  }, [user]);
 
-  // 2. ÉCOUTER les changements sur Firebase (Synchro entrante)
+  // 2. SYNCHRONISATION ENTRANTE ET FUSION (MERGE)
   useEffect(() => {
     if (!user) return;
 
+    const syncOnLogin = async () => {
+      const cartRef = doc(db, "userCarts", user.uid);
+      const docSnap = await getDoc(cartRef);
+      
+      // On récupère le panier "invité" actuel
+      const currentLocal = [...cart];
+
+      if (docSnap.exists()) {
+        const cloudData = docSnap.data().items as CartItem[] || [];
+        
+        // FUSION INTELLIGENTE : On combine Cloud + Local en additionnant les quantités si doublons
+        const mergedMap = new Map<number, CartItem>();
+
+        // On remplit avec le cloud d'abord
+        cloudData.forEach(item => mergedMap.set(item.id, { ...item }));
+
+        // On ajoute le local (si l'item existe déjà, on additionne la quantité)
+        currentLocal.forEach(item => {
+          if (mergedMap.has(item.id)) {
+            const existing = mergedMap.get(item.id)!;
+            mergedMap.set(item.id, { ...existing, quantity: existing.quantity + item.quantity });
+          } else {
+            mergedMap.set(item.id, { ...item });
+          }
+        });
+
+        const mergedArray = Array.from(mergedMap.values());
+        setCart(mergedArray);
+        
+        // Nettoyage local après fusion sur le compte
+        localStorage.removeItem('premium-shop-cart');
+      } else if (currentLocal.length > 0) {
+        // Nouveau compte : on pousse le panier local vers Firestore
+        await setDoc(cartRef, { items: currentLocal, updatedAt: new Date() });
+        localStorage.removeItem('premium-shop-cart');
+      }
+    };
+
+    syncOnLogin();
+
+    // Écoute en temps réel
     const cartRef = doc(db, "userCarts", user.uid);
     const unsubscribe = onSnapshot(cartRef, (docSnap) => {
       if (docSnap.exists()) {
         const cloudData = docSnap.data().items as CartItem[];
-        // On ne met à jour que si les données sont différentes du local
-        if (JSON.stringify(cloudData) !== JSON.stringify(cart)) {
-          setCart(cloudData || []);
-        }
+        setCart(cloudData || []);
       }
     });
 
     return () => unsubscribe();
   }, [user]);
 
-  // 3. Sauvegarder en local ET sur Firebase (Synchro sortante)
+  // 3. SAUVEGARDE AUTOMATIQUE (Synchro sortante)
   useEffect(() => {
-    localStorage.setItem('premium-shop-cart', JSON.stringify(cart));
+    if (!user) {
+      localStorage.setItem('premium-shop-cart', JSON.stringify(cart));
+      return;
+    }
 
     const syncToFirebase = async () => {
-      if (user) {
-        try {
-          const cartRef = doc(db, "userCarts", user.uid);
-          await setDoc(cartRef, {
-            items: cart,
-            updatedAt: new Date()
-          }, { merge: true });
-        } catch (error) {
-          console.error("Erreur synchro cloud:", error);
-        }
+      try {
+        const cartRef = doc(db, "userCarts", user.uid);
+        await setDoc(cartRef, {
+          items: cart,
+          updatedAt: new Date()
+        }, { merge: true });
+        localStorage.removeItem('premium-shop-cart');
+      } catch (error) {
+        console.error("Erreur synchro cloud:", error);
       }
     };
 
-    // On utilise un petit debounce pour ne pas surcharger Firebase à chaque clic
     const timer = setTimeout(syncToFirebase, 800);
     return () => clearTimeout(timer);
   }, [cart, user]);
