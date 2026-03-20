@@ -51,6 +51,7 @@ Contrairement aux intégrations basiques, PREMIUMSHOP utilise une **validation h
     ```bash
     npm run dev
     ```
+Pour visitez le site : https://mon-shop-premium.vercel.app/
 
 ## 👨‍💻 Développeur
 Conçu et développé par **HOUETO Fabrice** (HFR Web Designer).
